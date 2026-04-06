@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake Data Generator V13.0 Ultimate | Admin Controlled</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 100%);
+            font-family: 'Courier New', monospace;
+            color: #00ff41;
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .header {
+            background: rgba(0,0,0,0.9);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 3px solid #00ff41;
+            box-shadow: 0 0 20px rgba(0,255,65,0.3);
+        }
+        
+        .header h1 {
+            font-size: 2em;
+            text-shadow: 0 0 10px #00ff41;
+        }
+        
+        .version-badge {
+            display: inline-block;
+            background: #ff4444;
+            color: #fff;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        /* Maintenance Banner */
+        .maintenance-banner {
+            background: #ff4444;
+            color: #000;
+            text-align: center;
+            padding: 10px;
+            font-weight: bold;
+            display: none;
+        }
+        
+        /* Access Panel */
+        .access-panel {
+            max-width: 500px;
+            margin: 100px auto;
+            background: rgba(0,0,0,0.8);
+            border: 2px solid #00ff41;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .access-panel h2 {
+            margin-bottom: 20px;
+        }
+        
+        .access-panel input {
+            width: 100%;
+            padding: 12px;
+            background: #0a0a1a;
+            border: 1px solid #00ff41;
+            color: #00ff41;
+            font-family: monospace;
+            font-size: 16px;
+            margin: 10px 0;
+            text-align: center;
+        }
+        
+        /* Main Content */
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+        }
+        
+        .sidebar {
+            background: rgba(0,0,0,0.6);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid #00ff41;
+        }
+        
+        .sidebar h3 {
+            margin-bottom: 15px;
+            color: #00ff41;
+        }
+        
+        .category-btn {
+            width: 100%;
+            padding: 12px;
+            margin: 5px 0;
+            background: #1a1a2e;
+            border: 1px solid #333;
+            color: #00ff41;
+            cursor: pointer;
+            font-family: monospace;
+            transition: all 0.3s;
+        }
+        
+        .category-btn:hover, .category-btn.active {
+            background: #00ff41;
+            color: #000;
+            border-color: #00ff41;
+        }
+        
+        .main-content {
+            background: rgba(0,0,0,0.6);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid #00ff41;
+        }
+        
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            background: #1a1a2e;
+            border: 1px solid #00ff41;
+            color: #00ff41;
+            cursor: pointer;
+            font-family: monospace;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            background: #00ff41;
+            color: #000;
+        }
+        
+        .btn-danger {
+            border-color: #ff4444;
+            color: #ff4444;
+        }
+        
+        .btn-danger:hover {
+            background: #ff4444;
+            color: #000;
+        }
+        
+        .btn-warning {
+            border-color: #ffaa00;
+            color: #ffaa00;
+        }
+        
+        .btn-warning:hover {
+            background: #ffaa00;
+            color: #000;
+        }
+        
+        .output {
+            background: #0a0a1a;
+            border: 1px solid #00ff41;
+            border-radius: 5px;
+            padding: 15px;
+            min-height: 400px;
+            font-family: monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-x: auto;
+        }
+        
+        .output table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .output td, .output th {
+            padding: 8px;
+            border-bottom: 1px solid #333;
+            text-align: left;
+        }
+        
+        .output th {
+            color: #00ff41;
+            border-bottom: 2px solid #00ff41;
+        }
+        
+        /* Barcode Display */
+        .barcode-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .barcode-container canvas {
+            max-width: 100%;
+        }
+        
+        /* Admin Panel */
+        .admin-panel {
+            position: fixed;
+            top: 0;
+            right: -500px;
+            width: 500px;
+            height: 100vh;
+            background: #0a0a1a;
+            border-left: 3px solid #00ff41;
+            z-index: 1000;
+            transition: right 0.3s;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .admin-panel.open {
+            right: 0;
+        }
+        
+        .admin-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #00ff41;
+            color: #000;
+            padding: 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 1001;
+            font-size: 20px;
+        }
+        
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #00ff41;
+        }
+        
+        .license-list {
+            margin-top: 20px;
+        }
+        
+        .license-item {
+            background: #1a1a2e;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+        }
+        
+        .status-active {
+            background: #00ff41;
+            color: #000;
+        }
+        
+        .status-expired {
+            background: #ff4444;
+            color: #fff;
+        }
+        
+        .counter {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: #000;
+            padding: 10px 15px;
+            border-radius: 5px;
+            border: 1px solid #00ff41;
+            font-size: 12px;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding: 20px;
+            color: #555;
+            font-size: 12px;
+            margin-top: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            .admin-panel {
+                width: 100%;
+                right: -100%;
+            }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+</head>
+<body>
+
+<div class="header">
+    <h1>🔥 FAKE DATA GENERATOR V13.0 ULTIMATE 🔥
+        <span class="version-badge" id="versionBadge">v13.0.0</span>
+    </h1>
+    <p>© YutoriLiona - Admin Controlled | License Required | Barcode Generator</p>
+</div>
+
+<div class="maintenance-banner" id="maintenanceBanner">
+    ⚠️ MAINTENANCE MODE ACTIVE - System under maintenance. Please wait for update. ⚠️
+</div>
+
+<!-- Access Panel -->
+<div id="accessPanel" class="access-panel">
+    <h2>🔐 ACCESS REQUIRED</h2>
+    <p>Enter license key to access Fake Data Generator</p>
+    <input type="text" id="licenseKey" placeholder="Enter License Key">
+    <button class="btn" onclick="verifyLicense()">VERIFY ACCESS</button>
+    <p style="font-size: 12px; margin-top: 20px;">Contact admin to get license key</p>
+</div>
+
+<!-- Main Content (Hidden until auth) -->
+<div id="mainContent" style="display: none;">
+    <div class="container">
+        <div class="sidebar">
+            <h3>📁 DATA CATEGORY</h3>
+            <button class="category-btn" onclick="setCategory('identity')">🆔 IDENTITY (KTP/SIM)</button>
+            <button class="category-btn" onclick="setCategory('bank')">💳 BANK & CREDIT CARD</button>
+            <button class="category-btn" onclick="setCategory('digital')">🌐 DIGITAL ID</button>
+            <button class="category-btn" onclick="setCategory('address')">🏠 ADDRESS</button>
+            <button class="category-btn" onclick="setCategory('work')">💼 WORK</button>
+            <button class="category-btn" onclick="setCategory('vehicle')">🚗 VEHICLE</button>
+            <button class="category-btn" onclick="setCategory('medical')">🏥 MEDICAL</button>
+            <button class="category-btn" onclick="setCategory('crypto')">₿ CRYPTO</button>
+            <button class="category-btn" onclick="setCategory('barcode')">📊 BARCODE</button>
+            
+            <h3 style="margin-top: 20px;">⚙️ SETTINGS</h3>
+            <div style="margin: 10px 0;">
+                <label>Jumlah Data: </label>
+                <input type="number" id="dataCount" min="1" max="50" value="5" style="background: #1a1a2e; border: 1px solid #00ff41; color: #00ff41; padding: 5px; width: 100%; margin-top: 5px;">
+            </div>
+            <div style="margin: 10px 0;">
+                <label>Format Export: </label>
+                <select id="exportFormat" style="background: #1a1a2e; border: 1px solid #00ff41; color: #00ff41; padding: 5px; width: 100%; margin-top: 5px;">
+                    <option value="json">JSON</option>
+                    <option value="csv">CSV</option>
+                    <option value="sql">SQL</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="controls">
+                <button class="btn" onclick="generateData()">🎲 GENERATE</button>
+                <button class="btn" onclick="exportData()">💾 EXPORT</button>
+                <button class="btn" onclick="copyToClipboard()">📋 COPY</button>
+                <button class="btn btn-danger" onclick="clearOutput()">🗑 CLEAR</button>
+                <button class="btn btn-warning" onclick="checkForUpdate()">🔄 CHECK UPDATE</button>
+            </div>
+            <div class="output" id="output">
+                [ Ready to generate fake data ]
+            </div>
+            <div id="barcodeOutput" style="display: none;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Admin Panel Toggle -->
+<div class="admin-toggle" onclick="toggleAdminPanel()">👑</div>
+
+<!-- Admin Panel -->
+<div id="adminPanel" class="admin-panel">
+    <div class="admin-header">
+        <h2>👑 ADMIN DASHBOARD</h2>
+        <button class="btn" onclick="toggleAdminPanel()">✖ CLOSE</button>
+    </div>
+    
+    <div>
+        <h3>🔑 Generate License Key</h3>
+        <div style="display: flex; gap: 10px; margin: 10px 0;">
+            <input type="text" id="licenseDuration" placeholder="Days (1-365)" value="30" style="flex:1; background:#1a1a2e; border:1px solid #00ff41; color:#00ff41; padding:8px;">
+            <button class="btn" onclick="generateLicense()">GENERATE</button>
+        </div>
+        <div id="newLicense" style="background:#0a0a1a; padding:10px; margin:10px 0; word-break:break-all;"></div>
+    </div>
+    
+    <div>
+        <h3>📋 Active Licenses</h3>
+        <div id="licenseList" class="license-list"></div>
+    </div>
+    
+    <div>
+        <h3>⚙️ System Control</h3>
+        <div style="margin: 10px 0;">
+            <button class="btn" onclick="toggleMaintenanceMode()" id="maintenanceBtn">🔧 ENABLE MAINTENANCE</button>
+        </div>
+        <div style="margin: 10px 0;">
+            <label>Current Version: </label>
+            <input type="text" id="systemVersion" value="13.0.0" style="background:#1a1a2e; border:1px solid #00ff41; color:#00ff41; padding:5px;">
+            <button class="btn" onclick="updateVersion()" style="margin-top:5px;">UPDATE VERSION</button>
+        </div>
+        <div style="margin: 10px 0;">
+            <label>Release Notes: </label>
+            <textarea id="releaseNotes" rows="3" style="width:100%; background:#1a1a2e; border:1px solid #00ff41; color:#00ff41; padding:5px;">- Initial release
+- Added barcode generator
+- Admin control system</textarea>
+        </div>
+    </div>
+    
+    <div>
+        <h3>📊 System Stats</h3>
+        <div id="adminStats">
+            Total Licenses: <span id="totalLicenses">0</span><br>
+            Active Users: <span id="activeUsers">0</span><br>
+            Total Generated: <span id="totalGenerated">0</span>
+        </div>
+    </div>
+</div>
+
+<div class="counter" id="counter">
+    Generated: 0 records | Status: <span id="accessStatus">Locked</span>
+</div>
+
+<div class="copyright">
+    Copyright © YutoriLiona
+</div>
+
+<script>
+    // ============ DATA POOLS ============
+    const firstNames = ['Budi', 'Siti', 'Agus', 'Dewi', 'Joko', 'Rina', 'Andi', 'Maya', 'Rudi', 'Lisa'];
+    const lastNames = ['Santoso', 'Wijaya', 'Kusuma', 'Pratiwi', 'Hidayat', 'Nugroho'];
+    const cities = ['Jakarta', 'Surabaya', 'Bandung', 'Medan', 'Semarang', 'Denpasar'];
+    const provinces = ['DKI Jakarta', 'Jawa Barat', 'Jawa Tengah', 'Jawa Timur'];
+    const banks = ['BCA', 'Mandiri', 'BNI', 'BRI', 'CIMB Niaga'];
+    const jobs = ['Software Engineer', 'Doctor', 'Teacher', 'Lawyer', 'Entrepreneur'];
+    
+    // ============ SYSTEM VARIABLES ============
+    let currentCategory = 'identity';
+    let generatedData = [];
+    let generatedCount = 0;
+    let isAuthenticated = false;
+    let isMaintenance = false;
+    let currentVersion = '13.0.0';
+    let licenses = [];
+    let activeSessions = [];
+    
+    // ============ HELPER FUNCTIONS ============
+    function randomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    
+    function randomItem(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+    }
+    
+    function formatNIK() {
+        return randomInt(10, 99) + '' + randomInt(10, 99) + '' + randomInt(10, 99) + '' + randomInt(1000, 9999) + '' + randomInt(1000, 9999);
+    }
+    
+    function formatPhone() {
+        return '08' + randomInt(100000000, 999999999);
+    }
+    
+    function formatEmail(first, last) {
+        const domains = ['gmail.com', 'yahoo.com', 'outlook.com'];
+        return first.toLowerCase() + '.' + last.toLowerCase() + randomInt(1, 999) + '@' + randomItem(domains);
+    }
+    
+    function formatCreditCard() {
+        let card = randomItem(['4', '5', '6']);
+        while(card.length < 16) {
+            card += randomInt(0, 9);
+        }
+        return card;
+    }
+    
+    // ============ DATA GENERATORS ============
+    function generateIdentity() {
+        const firstName = randomItem(firstNames);
+        const lastName = randomItem(lastNames);
+        return {
+            NIK: formatNIK(),
+            FullName: firstName + ' ' + lastName,
+            BirthPlace: randomItem(cities),
+            BirthDate: `${randomInt(1,28)}/${randomInt(1,12)}/${randomInt(1970,2005)}`,
+            Gender: randomItem(['Laki-laki', 'Perempuan']),
+            Address: 'Jl. ' + randomItem(['Mawar', 'Melati', 'Anggrek']) + ' No. ' + randomInt(1, 100),
+            City: randomItem(cities),
+            Province: randomItem(provinces),
+            Phone: formatPhone(),
+            Email: formatEmail(firstName, lastName)
+        };
+    }
+    
+    function generateBank() {
+        return {
+            BankName: randomItem(banks),
+            AccountNumber: randomInt(1000000000, 9999999999).toString(),
+            AccountHolder: randomItem(firstNames) + ' ' + randomItem(lastNames),
+            CardNumber: formatCreditCard(),
+            CVV: randomInt(100, 999),
+            Expiry: `${randomInt(1,12)}/${randomInt(2025,2035)}`,
+            IBAN: 'ID' + randomInt(10, 99) + randomInt(1000000000, 9999999999)
+        };
+    }
+    
+    function generateDigital() {
+        const username = randomItem(['cool', 'pro', 'master', 'zero']) + randomInt(100, 999);
+        return {
+            Email: formatEmail(randomItem(firstNames), randomItem(lastNames)),
+            Username: username,
+            Instagram: '@' + username,
+            IP_Address: `${randomInt(1,255)}.${randomInt(0,255)}.${randomInt(0,255)}.${randomInt(1,254)}`,
+            DeviceID: 'DEV-' + randomInt(100000, 999999)
+        };
+    }
+    
+    function generateAddress() {
+        return {
+            FullAddress: 'Jl. ' + randomItem(['Sudirman', 'Thamrin', 'Gatot Subroto']) + ' No. ' + randomInt(1, 500),
+            RT: randomInt(1, 20),
+            RW: randomInt(1, 20),
+            City: randomItem(cities),
+            Province: randomItem(provinces),
+            PostalCode: randomInt(10000, 99999).toString(),
+            Latitude: (-6 + Math.random() * 5).toFixed(6),
+            Longitude: (106 + Math.random() * 5).toFixed(6)
+        };
+    }
+    
+    function generateWork() {
+        return {
+            Company: 'PT ' + randomItem(['Majulah', 'Sejahtera', 'Jaya']) + ' ' + randomItem(['Group', 'Corp']),
+            Position: randomItem(jobs),
+            Salary: 'Rp ' + randomInt(5, 50) + '.000.000',
+            EmployeeID: 'EMP-' + randomInt(1000, 9999),
+            WorkEmail: randomItem(['hr', 'it', 'finance']) + '@company.com'
+        };
+    }
+    
+    function generateVehicle() {
+        return {
+            LicensePlate: randomItem(['B', 'D', 'F']) + ' ' + randomInt(1000, 9999) + ' ' + randomItem(['ABC', 'XYZ']),
+            Brand: randomItem(['Toyota', 'Honda', 'Suzuki']),
+            Model: randomItem(['Avanza', 'Civic', 'Beat']),
+            Year: randomInt(2000, 2024),
+            Color: randomItem(['Black', 'White', 'Silver', 'Red'])
+        };
+    }
+    
+    function generateMedical() {
+        return {
+            PatientID: 'PAT-' + randomInt(10000, 99999),
+            BloodType: randomItem(['A', 'B', 'AB', 'O']),
+            Allergies: randomItem(['None', 'Peanuts', 'Dust', 'Penicillin']),
+            MedicalHistory: randomItem(['None', 'Hypertension', 'Diabetes']),
+            InsuranceProvider: randomItem(['BPJS', 'Mandiri Inhealth', 'AIA'])
+        };
+    }
+    
+    function generateCrypto() {
+        return {
+            BitcoinAddress: 'bc1q' + Array(32).fill(0).map(() => randomItem(['a','b','c','d','e','f','0','1','2','3','4','5','6','7','8','9'])).join(''),
+            EthereumAddress: '0x' + Array(40).fill(0).map(() => randomItem(['a','b','c','d','e','f','0','1','2','3','4','5','6','7','8','9'])).join(''),
+            WalletType: randomItem(['Hardware', 'Software', 'Exchange']),
+            Balance: randomInt(0, 100) / 10 + ' BTC'
+        };
+    }
+    
+    function generateBarcodeData() {
+        const barcodeType = randomItem(['CODE128', 'EAN13', 'CODE39', 'ITF14']);
+        const data = randomInt(1000000000000, 9999999999999).toString();
+        return {
+            BarcodeType: barcodeType,
+            BarcodeData: data,
+            ProductName: 'Product ' + randomInt(1000, 9999),
+            Price: 'Rp ' + randomInt(10000, 1000000),
+            QRContent: JSON.stringify(generateIdentity())
+        };
+    }
+    
+    function generateSingleRecord() {
+        switch(currentCategory) {
+            case 'identity': return generateIdentity();
+            case 'bank': return generateBank();
+            case 'digital': return generateDigital();
+            case 'address': return generateAddress();
+            case 'work': return generateWork();
+            case 'vehicle': return generateVehicle();
+            case 'medical': return generateMedical();
+            case 'crypto': return generateCrypto();
+            case 'barcode': return generateBarcodeData();
+            default: return generateIdentity();
+        }
+    }
+    
+    // ============ BARCODE RENDERING ============
+    async function renderBarcode(data) {
+        const barcodeDiv = document.getElementById('barcodeOutput');
+        barcodeDiv.style.display = 'block';
+        barcodeDiv.innerHTML = '<div class="barcode-container" id="barcodeContainer"></div>';
+        
+        const container = document.getElementById('barcodeContainer');
+        container.innerHTML = '';
+        
+        for(let i = 0; i < data.length; i++) {
+            const item = data[i];
+            const canvas = document.createElement('canvas');
+            canvas.id = `barcode_${i}`;
+            canvas.style.margin = '10px auto';
+            canvas.style.display = 'block';
+            container.appendChild(canvas);
+            
+            try {
+                JsBarcode(canvas, item.BarcodeData || item.NIK || item.AccountNumber || item.CardNumber || item.PatientID || item.BitcoinAddress?.substring(0, 20) || '123456789012', {
+                    format: "CODE128",
+                    lineColor: "#000",
+                    width: 2,
+                    height: 50,
+                    displayValue: true,
+                    fontSize: 12,
+                    margin: 10
+                });
+            } catch(e) {
+                canvas.outerHTML = `<div style="color:#ff4444">Barcode error: ${e.message}</div>`;
+            }
+            
+            // Add QR code for first item
+            if(i === 0 && item.QRContent) {
+                const qrDiv = document.createElement('div');
+                qrDiv.style.marginTop = '20px';
+                qrDiv.style.textAlign = 'center';
+                qrDiv.innerHTML = '<strong>QR Code:</strong><br><canvas id="qrCanvas"></canvas>';
+                container.appendChild(qrDiv);
+                
+                // Simple QR simulation (since we don't have QR lib, show text)
+                const qrCanvas = document.getElementById('qrCanvas');
+                if(qrCanvas) {
+                    const ctx = qrCanvas.getContext('2d');
+                    qrCanvas.width = 200;
+                    qrCanvas.height = 200;
+                    ctx.fillStyle = 'white';
+                    ctx.fillRect(0, 0, 200, 200);
+                    ctx.fillStyle = 'black';
+                    ctx.font = '10px monospace';
+                    ctx.fillText('QR Data:', 10, 20);
+                    ctx.fillText(JSON.stringify(item.QRContent).substring(0, 100), 10, 40);
+                }
+            }
+        }
+    }
+    
+    // ============ LICENSE SYSTEM ============
+    function generateLicenseKey() {
+        return 'TRK-' + Math.random().toString(36).substring(2, 10).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+    }
+    
+    function generateLicense() {
+        const days = parseInt(document.getElementById('licenseDuration').value) || 30;
+        const key = generateLicenseKey();
+        const expires = new Date();
+        expires.setDate(expires.getDate() + days);
+        
+        const license = {
+            key: key,
+            expires: expires.toISOString(),
+            created: new Date().toISOString(),
+            active: true
+        };
+        
+        licenses.push(license);
+        saveLicenses();
+        displayLicenses();
+        
+        document.getElementById('newLicense').innerHTML = `<strong>New License Key:</strong><br>${key}<br>Expires: ${expires.toLocaleDateString()}`;
+        updateAdminStats();
+    }
+    
+    function verifyLicense() {
+        const inputKey = document.getElementById('licenseKey').value.toUpperCase();
+        const now = new Date();
+        
+        const validLicense = licenses.find(l => l.key === inputKey && new Date(l.expires) > now && l.active);
+        
+        if(validLicense) {
+            isAuthenticated = true;
+            document.getElementById('accessPanel').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            document.getElementById('accessStatus').innerHTML = 'Active';
+            document.getElementById('accessStatus').style.color = '#00ff41';
+            
+            // Log session
+            activeSessions.push({
+                license: inputKey,
+                time: new Date().toISOString(),
+                ip: 'local'
+            });
+            updateAdminStats();
+        } else {
+            alert('INVALID LICENSE KEY! Contact admin to get access.');
+        }
+    }
+    
+    function saveLicenses() {
+        localStorage.setItem('admin_licenses', JSON.stringify(licenses));
+    }
+    
+    function loadLicenses() {
+        const saved = localStorage.getItem('admin_licenses');
+        if(saved) {
+            licenses = JSON.parse(saved);
+        } else {
+            // Create default admin license
+            const defaultLicense = {
+                key: 'TRK-ADMIN-001',
+                expires: new Date('2030-12-31').toISOString(),
+                created: new Date().toISOString(),
+                active: true
+            };
+            licenses = [defaultLicense];
+            saveLicenses();
+        }
+        displayLicenses();
+        updateAdminStats();
+    }
+    
+    function displayLicenses() {
+        const container = document.getElementById('licenseList');
+        if(!container) return;
+        
+        container.innerHTML = licenses.map(l => `
+            <div class="license-item">
+                <span>${l.key}</span>
+                <span class="status-badge ${new Date(l.expires) > new Date() ? 'status-active' : 'status-expired'}">
+                    ${new Date(l.expires) > new Date() ? 'ACTIVE' : 'EXPIRED'}
+                </span>
+                <button class="btn" style="padding:2px 8px; font-size:10px;" onclick="revokeLicense('${l.key}')">REVOKE</button>
+            </div>
+        `).join('');
+    }
+    
+    function revokeLicense(key) {
+        licenses = licenses.filter(l => l.key !== key);
+        saveLicenses();
+        displayLicenses();
+        updateAdminStats();
+    }
+    
+    // ============ MAINTENANCE MODE ============
+    function toggleMaintenanceMode() {
+        isMaintenance = !isMaintenance;
+        const banner = document.getElementById('maintenanceBanner');
+        const btn = document.getElementById('maintenanceBtn');
+        
+        if(isMaintenance) {
+            banner.style.display = 'block';
+            btn.innerHTML = '🔧 DISABLE MAINTENANCE';
+            btn.style.borderColor = '#ffaa00';
+        } else {
+            banner.style.display = 'none';
+            btn.innerHTML = '🔧 ENABLE MAINTENANCE';
+            btn.style.borderColor = '#00ff41';
+        }
+        
+        localStorage.setItem('maintenance_mode', isMaintenance);
+    }
+    
+    function loadMaintenanceMode() {
+        const saved = localStorage.getItem('maintenance_mode');
+        if(saved === 'true') {
+            isMaintenance = true;
+            document.getElementById('maintenanceBanner').style.display = 'block';
+            document.getElementById('maintenanceBtn').innerHTML = '🔧 DISABLE MAINTENANCE';
+        }
+    }
+    
+    // ============ VERSION CONTROL ============
+    function updateVersion() {
+        const newVersion = document.getElementById('systemVersion').value;
+        const notes = document.getElementById('releaseNotes').value;
+        
+        currentVersion = newVersion;
+        document.getElementById('versionBadge').innerHTML = `v${currentVersion}`;
+        
+        localStorage.setItem('system_version', currentVersion);
+        localStorage.setItem('release_notes', notes);
+        
+        alert(`Version updated to ${currentVersion}\nRelease notes saved!`);
+    }
+    
+    function loadVersion() {
+        const saved = localStorage.getItem('system_version');
+        if(saved) {
+            currentVersion = saved;
+            document.getElementById('versionBadge').innerHTML = `v${currentVersion}`;
+            document.getElementById('systemVersion').value = currentVersion;
+        }
+        
+        const savedNotes = localStorage.getItem('release_notes');
+        if(savedNotes) {
+            document.getElementById('releaseNotes').value = savedNotes;
+        }
+    }
+    
+    function checkForUpdate() {
+        if(isMaintenance) {
+            alert('SYSTEM IN MAINTENANCE MODE\nNo updates available at this time.\nPlease wait for admin to complete maintenance.');
+        } else {
+            alert(`Current Version: ${currentVersion}\nSystem is up to date!\n\nRelease Notes:\n${localStorage.getItem('release_notes') || 'No release notes'}`);
+        }
+    }
+    
+    // ============ DATA MANAGEMENT ============
+    function generateData() {
+        if(isMaintenance) {
+            alert('SYSTEM UNDER MAINTENANCE!\nPlease wait for admin to complete maintenance.');
+            return;
+        }
+        
+        const count = parseInt(document.getElementById('dataCount').value);
+        generatedData = [];
+        
+        for(let i = 0; i < count; i++) {
+            generatedData.push(generateSingleRecord());
+        }
+        
+        generatedCount += count;
+        document.getElementById('counter').innerHTML = `Generated: ${generatedCount} records | Status: Active`;
+        displayData();
+        
+        // Render barcode if category is barcode
+        if(currentCategory === 'barcode') {
+            renderBarcode(generatedData);
+        } else {
+            document.getElementById('barcodeOutput').style.display = 'none';
+        }
+        
+        updateAdminStats();
+    }
+    
+    function displayData() {
+        const output = document.getElementById('output');
+        
+        if(generatedData.length === 0) {
+            output.innerHTML = '[ No data to display ]';
+            return;
+        }
+        
+        let html = '<table>';
+        html += '<tr>';
+        for(let key in generatedData[0]) {
+            html += `<th>${key}</th>`;
+        }
+        html += '</tr>';
+        
+        generatedData.forEach(record => {
+            html += '<tr>';
+            for(let key in record) {
+                let value = record[key];
+                if(typeof value === 'object') value = JSON.stringify(value);
+                html += `<td style="border-bottom:1px solid #333">${value}</td>`;
+            }
+            html += '</tr>';
+        });
+        
+        html += '</table>';
+        output.innerHTML = html;
+    }
+    
+    function exportData() {
+        const format = document.getElementById('exportFormat').value;
+        let content = '';
+        let filename = `fake_data_${currentCategory}_${Date.now()}`;
+        
+        switch(format) {
+            case 'json':
+                content = JSON.stringify(generatedData, null, 2);
+                filename += '.json';
+                break;
+            case 'csv':
+                if(generatedData.length > 0) {
+                    const headers = Object.keys(generatedData[0]);
+                    content = headers.join(',') + '\n';
+                    generatedData.forEach(record => {
+                        const row = headers.map(h => {
+                            let val = record[h];
+                            if(typeof val === 'object') val = JSON.stringify(val);
+                            return `"${val}"`;
+                        }).join(',');
+                        content += row + '\n';
+                    });
+                }
+                filename += '.csv';
+                break;
+            case 'sql':
+                if(generatedData.length > 0) {
+                    const tableName = `fake_${currentCategory}`;
+                    const columns = Object.keys(generatedData[0]);
+                    content = `CREATE TABLE ${tableName} (\n`;
+                    columns.forEach(col => {
+                        content += `  ${col} TEXT,\n`;
+                    });
+                    content = content.slice(0, -2) + '\n);\n\n';
+                    
+                    generatedData.forEach(record => {
+                        const values = columns.map(col => {
+                            let val = record[col];
+                            if(typeof val === 'object') val = JSON.stringify(val);
+                            return `'${String(val).replace(/'/g, "''")}'`;
+                        }).join(', ');
+                        content += `INSERT INTO ${tableName} (${columns.join(', ')}) VALUES (${values});\n`;
+                    });
+                }
+                filename += '.sql';
+                break;
+        }
+        
+        const blob = new Blob([content], { type: 'text/plain' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+        URL.revokeObjectURL(link.href);
+    }
+    
+    function copyToClipboard() {
+        const content = JSON.stringify(generatedData, null, 2);
+        navigator.clipboard.writeText(content);
+        alert('Data copied to clipboard!');
+    }
+    
+    function clearOutput() {
+        generatedData = [];
+        document.getElementById('output').innerHTML = '[ Data cleared ]';
+        document.getElementById('barcodeOutput').style.display = 'none';
+    }
+    
+    function setCategory(category) {
+        currentCategory = category;
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        event.target.classList.add('active');
+        generateData();
+    }
+    
+    // ============ ADMIN PANEL ============
+    function toggleAdminPanel() {
+        const panel = document.getElementById('adminPanel');
+        panel.classList.toggle('open');
+    }
+    
+    function updateAdminStats() {
+        const activeCount = licenses.filter(l => new Date(l.expires) > new Date() && l.active).length;
+        document.getElementById('totalLicenses').innerHTML = licenses.length;
+        document.getElementById('activeUsers').innerHTML = activeCount;
+        document.getElementById('totalGenerated').innerHTML = generatedCount;
+    }
+    
+    // ============ INITIALIZATION ============
+    function init() {
+        loadLicenses();
+        loadMaintenanceMode();
+        loadVersion();
+        updateAdminStats();
+        
+        // Check if admin license exists in localStorage for auto-login demo
+        const hasAdmin = licenses.some(l => l.key === 'TRK-ADMIN-001');
+        if(!hasAdmin) {
+            licenses.push({
+                key: 'TRK-ADMIN-001',
+                expires: new Date('2030-12-31').toISOString(),
+                created: new Date().toISOString(),
+                active: true
+            });
+            saveLicenses();
+        }
+    }
+    
+    init();
+</script>
+</body>
+</html>
